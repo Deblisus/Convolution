@@ -16,15 +16,16 @@ def convolute():
             red = green = blue = 0
             for ii in range(3):
                 for jj in range(3):
-                    
-                    current = img[i+ii-1][j+jj-1]
-                    red += current[0] * kernel[ii][jj]
-                    green += current[1] * kernel[ii][jj]
-                    blue += current[2] * kernel[ii][jj]
+                    current_img = img[i+ii-1][j+jj-1]
+                    current_kernel = kernel[ii][jj]
+
+                    red += current_img[0] * current_kernel
+                    green += current_img[1] * current_kernel
+                    blue += current_img[2] * current_kernel
             
-            red /= 9
-            green /= 9
-            blue /= 9
+            red /= kernel[3][0]
+            green /= kernel[3][0]
+            blue /= kernel[3][0]
             
             conv_img[i][j] = [red, green, blue]
     #also I will take care of the borders and corners another day, not the most important for now I think
