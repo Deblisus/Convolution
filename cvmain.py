@@ -24,13 +24,20 @@ Brief explanation:
             
 '''
 
+'''
+    Update!
+    Tried to run it with a higher res picture which is not even a huge res one: 1800x525
+    It took about 4:45 to run with a sharpening kernel (like it even matters)...
+    Yeah, I expected it to be bad, but not really this bad
+'''
+
 def to_gray_scale():
     for i in range(height):
         for j in range(width):
             R, G, B = img[i][j]
             #gs_value = (int(R) + int(G) + int(b)) / 3 
             gs_value = (int(min(R, G, B)) + int(max(R, G, B))) / 2 #gray-scale value
-            img[i][j] = [gs_value, gs_value, gs_value] 
+            img[i][j] = [gs_value, gs_value, gs_value]
             # I know that I can save about 3 times the memory by ghanging from rgb,
             # but it will not work well with the convolution function, but
             # I probaably will fix that in the future i guess and until then 
@@ -65,7 +72,7 @@ def convolute():
 
 
 #reading image obv
-img = cv2.imread("download.jpg")
+img = cv2.imread("picture.jpg")
 height, width, channels = img.shape
 
 #reading kernel from file
