@@ -1,7 +1,18 @@
 import cv2
 import numpy as np
 
+def lazy_conversion():
+    gs_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    return gs_img
 
+def to_gray_scale():
+    for i in range(height):
+        for j in range(width):
+            R, G, B = img[i][j]
+            #print(R, G, B)
+            gs_value = (min(R, G, B) + max(R, G, B)) / 2 #gray-scale value
+            #print(gs_value)
+            img[i][j] = [gs_value, gs_value, gs_value]
 
 def show_images():
     cv2.imshow('image', img)
@@ -16,12 +27,12 @@ def convolute():
             red = green = blue = 0
             for ii in range(3):
                 for jj in range(3):
-                    current_img = img[i+ii-1][j+jj-1]
+                    current_pixel = img[i+ii-1][j+jj-1]
                     current_kernel = kernel[ii][jj]
 
-                    red += current_img[0] * current_kernel
-                    green += current_img[1] * current_kernel
-                    blue += current_img[2] * current_kernel
+                    red += current_pixel[0] * current_kernel
+                    green += current_pixel[1] * current_kernel
+                    blue += current_pixel[2] * current_kernel
             
             red /= kernel[3][0]
             green /= kernel[3][0]
@@ -41,7 +52,13 @@ kernel = np.loadtxt("kernel.txt")
 #initializing new convoluted picture
 conv_img = np.zeros((height, width, channels))
 
-convolute()
+if kernel[3][1] == 1:
+    #to_gray_scale()
+    img = lazy_conversion()
+
+print(img[0][0])
+
+#convolute()
 #show_images()
 
-cv2.imwrite("convoluted_image.png", conv_img)
+cv2.imwrite("convoluted_image.png", img)
