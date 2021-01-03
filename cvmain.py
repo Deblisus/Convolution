@@ -1,17 +1,12 @@
 import cv2
 import numpy as np
 
-def lazy_conversion():
-    gs_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    return gs_img
-
 def to_gray_scale():
     for i in range(height):
         for j in range(width):
             R, G, B = img[i][j]
-            #print(R, G, B)
-            gs_value = (min(R, G, B) + max(R, G, B)) / 2 #gray-scale value
-            #print(gs_value)
+            #gs_value = (int(R) + int(G) + int(b)) / 3 
+            gs_value = (int(min(R, G, B)) + int(max(R, G, B))) / 2 #gray-scale value
             img[i][j] = [gs_value, gs_value, gs_value]
 
 def show_images():
@@ -53,12 +48,9 @@ kernel = np.loadtxt("kernel.txt")
 conv_img = np.zeros((height, width, channels))
 
 if kernel[3][1] == 1:
-    #to_gray_scale()
-    img = lazy_conversion()
+    to_gray_scale()
 
-print(img[0][0])
-
-#convolute()
+convolute()
 #show_images()
 
-cv2.imwrite("convoluted_image.png", img)
+cv2.imwrite("convoluted_image.png", conv_img)
