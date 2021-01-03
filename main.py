@@ -1,5 +1,8 @@
 from PIL import Image
 
+# Don't open this, the  real main is cvmain.py
+# Pillow kinda sucks
+
 def print_img(image):
     for i in range(image.width):
         for j in range(image.height):
