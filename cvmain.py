@@ -70,23 +70,34 @@ def convolute():
             conv_img[i][j] = [red, green, blue]
     #also I will take care of the borders and corners another day, not the most important for now I think
 
+def main():
+    #reading image obv
+    img = cv2.imread("picture.jpg")
+    height, width, channels = img.shape
 
-#reading image obv
-img = cv2.imread("picture.jpg")
-height, width, channels = img.shape
+    #reading kernel from file
+    kernel = np.loadtxt("kernel.txt")
 
-#reading kernel from file
-kernel = np.loadtxt("kernel.txt")
+    #initializing new convoluted picture
+    conv_img = np.zeros((height, width, channels))
 
-#initializing new convoluted picture
-conv_img = np.zeros((height, width, channels))
+    #converting to gray scale
+    if kernel[3][1] == 1:
+        to_gray_scale()
 
-#converting to gray scale
-if kernel[3][1] == 1:
-    to_gray_scale()
+    convolute()
+    #show_images()
 
-convolute()
-#show_images()
+    #saving the image (why did I type this?)
+    cv2.imwrite("convoluted_image.png", conv_img)
 
-#saving the image (why did I type this?)
-cv2.imwrite("convoluted_image.png", conv_img)
+#main()
+
+def cv2_gaussian():
+    img = cv2.imread("picture.jpg")
+
+    conv_img = cv2.GaussianBlur(img, (3, 3), 0)
+
+    cv2.imwrite("convoluted_img_cv2.png", conv_img)
+
+cv2_gaussian()
