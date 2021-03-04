@@ -52,6 +52,7 @@ def show_images():
 def convolute():
     #yes, I know it is verry brute forced and totally not efficient on this state, or any state
     spacer = int(kernel[-1][2]/2)
+    
     for i in range(spacer, height-spacer):
         for j in range(spacer, width-spacer):
             red = green = blue = 0
