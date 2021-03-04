@@ -19,8 +19,8 @@ Brief explanation:
             1st number: the number to be divided by to keep the luminance 'accurate' (probably will 'automate'
                             it by summing the values in the kernel and avoiding zero)
             2nd number: 1 or 0, to be converted to gray scale or not to be converted to gray scale
-            3rd number: TBD, maybe for the edge detection to apply both sides
-                            (left oriented and right oriented edge detection kernel) to the image
+            3rd number: size of kernel. I don't even know how I made it to work but it does WOO!
+                        Example: if the kernel is 5x5, the number will be 5
             
 '''
 
@@ -51,53 +51,54 @@ def show_images():
 
 def convolute():
     #yes, I know it is verry brute forced and totally not efficient on this state, or any state
-    for i in range(1, height-1):
-        for j in range(1, width-1):
+    spacer = int(kernel[-1][2]/2)
+    for i in range(spacer, height-spacer):
+        for j in range(spacer, width-spacer):
             red = green = blue = 0
-            for ii in range(3):
-                for jj in range(3):
-                    current_pixel = img[i+ii-1][j+jj-1]
+            for ii in range(int(kernel[-1][2])):
+                for jj in range(int(kernel[-1][2])):
+                    current_pixel = img[i+ii-spacer][j+jj-spacer]
                     current_kernel = kernel[ii][jj]
 
                     red += current_pixel[0] * current_kernel
                     green += current_pixel[1] * current_kernel
                     blue += current_pixel[2] * current_kernel
             
-            red /= kernel[3][0]
-            green /= kernel[3][0]
-            blue /= kernel[3][0]
+            red /= kernel[-1][0]
+            green /= kernel[-1][0]
+            blue /= kernel[-1][0]
             
             conv_img[i][j] = [red, green, blue]
-    #also I will take care of the borders and corners another day, not the most important for now I think
+    #also I will take care of the borders and corners another day, not the most important functionality for now I think
 
-def main():
+
     #reading image obv
-    img = cv2.imread("picture.jpg")
-    height, width, channels = img.shape
+img = cv2.imread("img.jpg")
+height, width, channels = img.shape
 
-    #reading kernel from file
-    kernel = np.loadtxt("kernel.txt")
+#reading kernel from file
+kernel = np.loadtxt("kernel.txt")
 
-    #initializing new convoluted picture
-    conv_img = np.zeros((height, width, channels))
+#initializing new convoluted picture
+conv_img = np.zeros((height, width, channels))
 
-    #converting to gray scale
-    if kernel[3][1] == 1:
-        to_gray_scale()
+#converting to gray scale
+if kernel[-1][1] == 1:
+    to_gray_scale()
 
-    convolute()
-    #show_images()
+convolute()
+#show_images()
 
-    #saving the image (why did I type this?)
-    cv2.imwrite("convoluted_image.png", conv_img)
+#saving the image (why did I type this?)
+cv2.imwrite("convoluted_image.png", conv_img)
 
 #main()
 
 def cv2_gaussian():
-    img = cv2.imread("picture.jpg")
+    img = cv2.imread("img.jpg")
 
     conv_img = cv2.GaussianBlur(img, (3, 3), 0)
 
     cv2.imwrite("convoluted_img_cv2.png", conv_img)
 
-cv2_gaussian()
+#cv2_gaussian()
