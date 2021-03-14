@@ -10,6 +10,11 @@ Brief explanation:
                         for example for the edge detection kernels
         convolute: Again, basically the title, takes the selected image and applies the
                         kernel on it (kinda brute forcing)
+        calc_divider: Automatically calculates the dividing factor during the convolution
+                        For example if the kernel is 3x3 and composed only of ones, normally
+                        the kernel actually consists of 1/9s for the luminosity to remain
+                        constant. I made the function that sums the elements of kernel
+                        and returns it, if the number is 0, it returns 1 because dividing by 0
     
     kernel: 
         Using a 3x3 kernel, the first 3 lines
