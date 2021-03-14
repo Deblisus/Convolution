@@ -14,7 +14,7 @@ Brief explanation:
         to_gray_scale: Basically the title, takes the image and converts it to grayscale
                         for example for the edge detection kernels
         convolute: Again, basically the title, takes the selected image and applies the
-                        kernel on it (kinda brute forcing)
+                        kernel on it
     
     kernel: 
         Using a 3x3 kernel, the first 3 lines
@@ -27,12 +27,6 @@ Brief explanation:
             
 '''
 
-'''
-    Update!
-    Tried to run it with a higher res picture which is not even a huge res one: 1800x525
-    It took about 4:45 to run with a sharpening kernel (like it even matters)...
-    Yeah, I expected it to be bad, but not really this bad
-'''
 
 def to_gray_scale():
     for i in range(height):
@@ -56,28 +50,32 @@ def convolute():
     #yes, I know it is verry brute forced and totally not efficient on this state, or any state
     spacer = int(kernel[-1][2]/2)
     size = int(kernel[-1][2])
+    divider = kernel[-1][0]
 
-    kern = kernel[0:size]
+    actual_kernel = kernel[0:size]
     
     for i in range(spacer, height-spacer):
         for j in range(spacer, width-spacer):
             # This ain't pretty, but definately much faster. Finally implemented matrix multiplication
             
-            curr_matrix = img[i-spacer:i+spacer+1, j-spacer:j+spacer+1]
+            curr_bgr_section = img[i-spacer:i+spacer+1, j-spacer:j+spacer+1]
 
-            blue = ((curr_matrix[0:size, 0:size, 0] * kern)/kernel[-1][0]).sum()
-            green = ((curr_matrix[0:size, 0:size, 1] * kern)/kernel[-1][0]).sum()
-            red = ((curr_matrix[0:size, 0:size, 2] * kern)/kernel[-1][0]).sum()
+            blue_section = curr_bgr_section[0:size, 0:size, 0]
+            green_section = curr_bgr_section[0:size, 0:size, 1]
+            red_section = curr_bgr_section[0:size, 0:size, 2]
+
+            blue = ((blue_section * actual_kernel) / divider).sum()
+            green = ((green_section * actual_kernel) / divider).sum()
+            red = ((red_section * actual_kernel) / divider).sum()
             
             conv_img[i][j] = [blue, green, red]
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
 
 
     #reading image obv
-img = cv2.imread("picture.jpg")
+img = cv2.imread("img.jpg")
 height, width, channels = img.shape
 
-#reading kernel from file
 kernel = np.loadtxt("kernel.txt")
 
 #initializing new convoluted picture

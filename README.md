@@ -3,7 +3,7 @@
 
 Brief explanation:
     Trying to make a convolution algorithm from scratch
-    not getting way to complicated or something
+    not getting way too complicated or something
 
     functions:
         to_gray_scale: Basically the title, takes the image and converts it to grayscale
