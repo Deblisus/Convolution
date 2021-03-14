@@ -27,7 +27,6 @@ Brief explanation:
             
 '''
 
-
 def to_gray_scale():
     for i in range(height):
         for j in range(width):
@@ -40,26 +39,41 @@ def to_gray_scale():
             # I probaably will fix that in the future i guess and until then 
             # it will work just fine
 
+
 def show_images():
     cv2.imshow('image', img)
     cv2.imshow('convoluted image', conv_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+
+def calc_divider(kernel):
+    div = 0
+    for row in kernel:
+        for value in row:
+            div += value
+    
+    if div:
+        return div
+    return 1
+
+
+
 def convolute():
     #yes, I know it is verry brute forced and totally not efficient on this state, or any state
     spacer = int(kernel[-1][2]/2)
     size = int(kernel[-1][2])
-    divider = kernel[-1][0]
 
     actual_kernel = kernel[0:size]
+
+    divider = calc_divider(actual_kernel)
     
     for i in range(spacer, height-spacer):
         for j in range(spacer, width-spacer):
             # This ain't pretty, but definately much faster. Finally implemented matrix multiplication
             
             curr_bgr_section = img[i-spacer:i+spacer+1, j-spacer:j+spacer+1]
-
+            
             blue_section = curr_bgr_section[0:size, 0:size, 0]
             green_section = curr_bgr_section[0:size, 0:size, 1]
             red_section = curr_bgr_section[0:size, 0:size, 2]
@@ -72,8 +86,8 @@ def convolute():
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
 
 
-    #reading image obv
-img = cv2.imread("img.jpg")
+#reading image obv
+img = cv2.imread("picture.jpg")
 height, width, channels = img.shape
 
 kernel = np.loadtxt("kernel.txt")
@@ -103,4 +117,4 @@ def cv2_gaussian():
 
 #cv2_gaussian()
 
-print(time.time() - start_time)
+print(round(time.time() - start_time, 2), "seconds")
