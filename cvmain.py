@@ -53,10 +53,7 @@ def show_images():
 
 
 def calc_divider(kernel):
-    div = 0
-    for row in kernel:
-        for value in row:
-            div += value
+    div = kernel.sum()
     
     if div:
         return div
