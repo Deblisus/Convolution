@@ -1,5 +1,8 @@
 import cv2
 import numpy as np
+import time
+
+start_time = time.time()
 
 #Should probably make all of this into a class but idk
 '''
@@ -52,29 +55,26 @@ def show_images():
 def convolute():
     #yes, I know it is verry brute forced and totally not efficient on this state, or any state
     spacer = int(kernel[-1][2]/2)
+    size = int(kernel[-1][2])
+
+    kern = kernel[0:size]
     
     for i in range(spacer, height-spacer):
         for j in range(spacer, width-spacer):
-            red = green = blue = 0
-            for ii in range(int(kernel[-1][2])):
-                for jj in range(int(kernel[-1][2])):
-                    current_pixel = img[i+ii-spacer][j+jj-spacer]
-                    current_kernel = kernel[ii][jj]
+            # This ain't pretty, but definately much faster. Finally implemented matrix multiplication
+            
+            curr_matrix = img[i-spacer:i+spacer+1, j-spacer:j+spacer+1]
 
-                    red += current_pixel[0] * current_kernel
-                    green += current_pixel[1] * current_kernel
-                    blue += current_pixel[2] * current_kernel
+            blue = ((curr_matrix[0:size, 0:size, 0] * kern)/kernel[-1][0]).sum()
+            green = ((curr_matrix[0:size, 0:size, 1] * kern)/kernel[-1][0]).sum()
+            red = ((curr_matrix[0:size, 0:size, 2] * kern)/kernel[-1][0]).sum()
             
-            red /= kernel[-1][0]
-            green /= kernel[-1][0]
-            blue /= kernel[-1][0]
-            
-            conv_img[i][j] = [red, green, blue]
+            conv_img[i][j] = [blue, green, red]
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
 
 
     #reading image obv
-img = cv2.imread("img.jpg")
+img = cv2.imread("picture.jpg")
 height, width, channels = img.shape
 
 #reading kernel from file
@@ -90,10 +90,11 @@ if kernel[-1][1] == 1:
 convolute()
 #show_images()
 
-#saving the image (why did I type this?)
-cv2.imwrite("convoluted_image.png", conv_img)
 
-#main()
+#saving the image (why did I type this?)
+cv2.imwrite("convoluted_image2.png", conv_img)
+
+
 
 def cv2_gaussian():
     img = cv2.imread("img.jpg")
@@ -103,3 +104,5 @@ def cv2_gaussian():
     cv2.imwrite("convoluted_img_cv2.png", conv_img)
 
 #cv2_gaussian()
+
+print(time.time() - start_time)
