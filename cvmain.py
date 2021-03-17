@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time
+import concurrent.futures
 
 start_time = time.time()
 
@@ -31,6 +32,48 @@ Brief explanation:
                         Example: if the kernel is 5x5, the number will be 5
             
 '''
+
+
+def threading(threads):
+    if threads == 0:
+        threads = 1
+    
+    dist = int(height / threads)
+    times = list(range(0, height, dist))
+    times.pop()
+    print(times)
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        #process = executor.map(threading_convolute, times)
+        process = [executor.submit(threading_convolute, pos, dist) for pos in times]
+
+def threading_convolute(start_pos, distance):
+    #yes, I know it is verry brute forced and totally not efficient on this state, or any state
+    spacer = int(kernel[-1][2]/2)
+    size = int(kernel[-1][2])
+
+    actual_kernel = kernel[0:size]
+    print(1)
+
+    divider = calc_divider(actual_kernel)
+    print(start_pos+distance)
+    for i in range(start_pos+spacer, start_pos+distance+spacer):
+        for j in range(spacer, width-spacer):
+            # This ain't pretty, but definately much faster. Finally implemented matrix multiplication
+            
+            curr_bgr_section = img[i-spacer:i+spacer+1, j-spacer:j+spacer+1]
+            
+            blue_section = curr_bgr_section[0:size, 0:size, 0]
+            green_section = curr_bgr_section[0:size, 0:size, 1]
+            red_section = curr_bgr_section[0:size, 0:size, 2]
+
+            blue = ((blue_section * actual_kernel) / divider).sum()
+            green = ((green_section * actual_kernel) / divider).sum()
+            red = ((red_section * actual_kernel) / divider).sum()
+            
+            conv_img[i][j] = [blue, green, red]
+    #also I will take care of the borders and corners another day, not the most important functionality for now I think
+
 
 def to_gray_scale():
     for i in range(height):
@@ -86,6 +129,7 @@ def convolute():
             
             conv_img[i][j] = [blue, green, red]
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
+    
 
 
 #reading image obv
@@ -101,7 +145,8 @@ conv_img = np.zeros((height, width, channels))
 if kernel[-1][1] == 1:
     to_gray_scale()
 
-convolute()
+threading(kernel[-1][0])
+#convolute()
 #show_images()
 
 
@@ -111,11 +156,11 @@ cv2.imwrite("convoluted_image2.png", conv_img)
 
 
 def cv2_gaussian():
-    img = cv2.imread("img.jpg")
+    img = cv2.imread("picture.jpg")
 
-    conv_img = cv2.GaussianBlur(img, (3, 3), 0)
+    conv_img = cv2.GaussianBlur(img, (7, 7), 0)
 
-    cv2.imwrite("convoluted_img_cv2.png", conv_img)
+    cv2.imwrite("convoluted_image2.png", conv_img)
 
 #cv2_gaussian()
 
