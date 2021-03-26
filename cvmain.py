@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import time
-#import concurrent.futures
+import concurrent.futures
 #import multiprocessing
 import threading
 
@@ -38,9 +38,10 @@ Brief explanation:
 
 
 
-def threading_convolute(step, threads):
+def threading_convolute(step):
     #yes, I know it is verry brute forced and totally not efficient on this state, or any state
     size = int(kernel[-1][2])
+    threads = int(kernel[-1][0])
     #print(start_pos)
 
     actual_kernel = kernel[0:size]
@@ -66,6 +67,7 @@ def threading_convolute(step, threads):
             conv_img[step][j] = [blue, green, red]
         step += threads
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
+    return step-threads
 
     
 def threadng(threads):
@@ -79,20 +81,26 @@ def threadng(threads):
     times.pop()
     print(times)
     print(dist)
+    '''
 
-    #with concurrent.futures.ThreadPoolExecutor() as executor:
-        #process = executor.map(threading_convolute, times)
-        #process = [executor.submit(threading_convolute, pos, dist) for pos in times]
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        steps = list(range(spacer, threads+spacer))
+        process = executor.map(threading_convolute, steps)
+        for res in process:
+            print(res)
+        #process = [executor.submit(threading_convolute, step, threads) for step in range(spacer, threads+spacer)]
     '''
     
     processes = []
     for step in range(spacer, (threads+spacer)):
-        t = threading.Thread(target=threading_convolute, args=[step, int(threads)])
+        t = threading.Thread(target=threading_convolute, args=[step, threads])
         t.start()
         processes.append(t)
     
     for t in processes:
         t.join()
+    '''
+        
     
 
 
