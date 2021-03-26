@@ -1,5 +1,7 @@
 # Convolution from scratch
  Trying to build a convolution program from scratch. Gave up on c++ so python it is
+ 
+## Multithreading is on the way
 
 Brief explanation:
     Trying to make a convolution algorithm from scratch
