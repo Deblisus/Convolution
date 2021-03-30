@@ -1,6 +1,8 @@
 # Convolution from scratch
  Trying to build a convolution program from scratch. Gave up on c++ so python it is
  
+ ### Run cvmain.py
+ 
 ## Multithreading is on the way
 
 Brief explanation:
