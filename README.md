@@ -21,8 +21,7 @@ Brief explanation:
     kernel: 
         Using a 3x3 kernel, the first 3 lines
         The 4th line is some parameters:
-            1st number: the number to be divided by to keep the luminance 'accurate' (probably will 'automate'
-                            it by summing the values in the kernel and avoiding zero)
+            1st number: Number of threads to be used for processing. Can't get it to work just yet
             2nd number: 1 or 0, to be converted to gray scale or not to be converted to gray scale
             3rd number: size of kernel. I don't even know how I made it to work but it does WOO!
                         Example: if the kernel is 5x5, the number will be 5
