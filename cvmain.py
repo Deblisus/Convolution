@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import time
 import concurrent.futures
-#import multiprocessing
-import threading
+from multiprocessing import Process
+#import threading
 
 start_time = time.time()
 
@@ -34,15 +34,20 @@ Brief explanation:
                         Example: if the kernel is 5x5, the number will be 5
             
 '''
+global img
+img = cv2.imread("pic.jpg")
+height, width, channels = img.shape
+global conv_img
+conv_img = np.zeros((height, width, channels))
 
 
-
-
-def threading_convolute(step):
+def threading_convolute(step, kernel):
     #yes, I know it is verry brute forced and totally not efficient on this state, or any state
     size = int(kernel[-1][2])
     threads = int(kernel[-1][0])
+    spacer = int(kernel[-1][2]/2)
     #print(start_pos)
+    init = step
 
     actual_kernel = kernel[0:size]
     #print(end_pos+spacer, height-spacer)
@@ -66,15 +71,16 @@ def threading_convolute(step):
             
             conv_img[step][j] = [blue, green, red]
         step += threads
+    cv2.imwrite("convoluted_image"+str(init)+".png", conv_img)
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
-    return step-threads
 
     
-def threadng(threads):
+def threadng(kernel):
+    threads = int(kernel[-1][0])
+    spacer = int(kernel[-1][2]/2)
     if threads == 0:
         threads = 1
     
-    threads = int(threads)
     '''
     dist = int(height / threads)
     times = list(range(0, height, dist))
@@ -82,7 +88,7 @@ def threadng(threads):
     print(times)
     print(dist)
     '''
-
+    '''
     with concurrent.futures.ThreadPoolExecutor() as executor:
         steps = list(range(spacer, threads+spacer))
         process = executor.map(threading_convolute, steps)
@@ -93,13 +99,12 @@ def threadng(threads):
     
     processes = []
     for step in range(spacer, (threads+spacer)):
-        t = threading.Thread(target=threading_convolute, args=[step, threads])
+        t = Process(target=threading_convolute, args=[step, kernel])
         t.start()
         processes.append(t)
     
     for t in processes:
         t.join()
-    '''
         
     
 
@@ -158,42 +163,28 @@ def convolute():
             
             conv_img[i][j] = [blue, green, red]
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
-    
 
 
-#reading image obv
-img = cv2.imread("picture.jpg")
-height, width, channels = img.shape
+if __name__ == '__main__':
+    #img = cv2.imread("pic.jpg")
 
-kernel = np.loadtxt("kernel.txt")
+    kernel = np.loadtxt("kernel.txt")
+    spacer = int(kernel[-1][2]/2)
 
-#initializing new convoluted picture
-conv_img = np.zeros((height, width, channels))
-spacer = int(kernel[-1][2]/2)
+    #converting to gray scale
+    if kernel[-1][1] == 1:
+        to_gray_scale()
 
-#converting to gray scale
-if kernel[-1][1] == 1:
-    to_gray_scale()
+    threadng(kernel)
+    #convolute()
+    #show_images()
 
-threadng(kernel[-1][0])
-#convolute()
-#show_images()
-
-conv_img = conv_img[1:height-spacer, 1:width-spacer]
+    conv_img = conv_img[1:height-spacer, 1:width-spacer]
 
 
-#saving the image (why did I type this?)
-cv2.imwrite("convoluted_image2.png", conv_img)
+    #saving the image (why did I type this?)
+    cv2.imwrite("convoluted_imagex.png", conv_img)
 
 
 
-def cv2_gaussian():
-    img = cv2.imread("picture.jpg")
-
-    conv_img = cv2.GaussianBlur(img, (7, 7), 0)
-
-    cv2.imwrite("convoluted_image2.png", conv_img)
-
-#cv2_gaussian()
-
-print(round(time.time() - start_time, 2), "seconds")
+    print(round(time.time() - start_time, 2), "seconds")
