@@ -1,8 +1,8 @@
-import cv2
+import cv2 as cv2
 import numpy as np
 import time
-import concurrent.futures
-from multiprocessing import Process
+#import concurrent.futures
+#from multiprocessing import Process
 #import threading
 
 start_time = time.time()
@@ -34,15 +34,6 @@ Brief explanation:
                         Example: if the kernel is 5x5, the number will be 5
             
 '''
-
-img = cv2.imread("pic.jpg")
-height, width, channels = img.shape
-
-kernel = np.loadtxt("kernel.txt")
-
-conv_img = np.zeros((height, width, channels))
-
-
 
 def to_gray_scale():
     for i in range(height):
@@ -96,28 +87,43 @@ def convolute():
             red = ((red_section * actual_kernel) / divider).sum()
             
             conv_img[i][j] = [blue, green, red]
+
+        if i % size*10 == 0:
+            cv2.imshow('after',conv_img/250)
+            kk = cv2.waitKey(1)
     #also I will take care of the borders and corners another day, not the most important functionality for now I think
 
 
-if __name__ == '__main__':
-    #img = cv2.imread("pic.jpg")
 
-    spacer = int(kernel[-1][2]/2)
+img = cv2.imread("picture.jpg")
+kernel = np.loadtxt("kernel.txt")
+height, width, channels = img.shape
 
-    #converting to gray scale
-    if kernel[-1][1] == 1:
-        to_gray_scale()
+spacer = int(kernel[-1][2]/2)
 
-    #threadng(kernel)
-    convolute()
-    #show_images()
-
-    conv_img = conv_img[1:height-spacer, 1:width-spacer]
-
-
-    #saving the image
-    cv2.imwrite("convoluted_imagex.png", conv_img)
+conv_img = np.zeros((height, width, channels))
+cv2.imshow('before', img)
+k = cv2.waitKey(1)
+#converting to gray scale
+if kernel[-1][1] == 1:
+    to_gray_scale()
 
 
+convolute()
 
-    print(round(time.time() - start_time, 2), "seconds")
+
+conv_img = conv_img[spacer:height-spacer, spacer:width-spacer]
+'''
+fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
+vid = cv2.VideoWriter('video.avi', fourcc, 1, (width, height))
+for i in range(len(images)):
+    vid.write(images[i])
+    '''
+#saving the image
+cv2.imwrite("convoluted_imagex.png", conv_img)
+
+
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+print(round(time.time() - start_time, 2), "seconds")
